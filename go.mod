@@ -1,4 +1,4 @@
-module github.com/le0developer/instatus-ping-uploader
+module github.com/le0developer/go-instatus-ping-uploader
 
 go 1.21.6
 
