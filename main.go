@@ -46,8 +46,16 @@ func main() {
 	for measurement := range statistics {
 		now := time.Now().UnixMilli()
 		fmt.Println("Measurement", now, measurement)
-		pingPoints = append(pingPoints, DataPoint{Timestamp: now, Value: float64(measurement.MaxRtt.Milliseconds())})
-		lossPoints = append(lossPoints, DataPoint{Timestamp: now, Value: float64(measurement.PacketLoss) * 100})
+		pingDataPoint := DataPoint{Timestamp: now, Value: float64(measurement.MaxRtt)}
+		lossDataPoint := DataPoint{Timestamp: now, Value: float64(measurement.PacketLoss) * 100}
+
+		if lossDataPoint.Value == 0 {
+			// Instatus doesn't support zero values for some reason
+			lossDataPoint.Value = 0.0001
+		}
+
+		pingPoints = append(pingPoints, pingDataPoint)
+		lossPoints = append(lossPoints, lossDataPoint)
 
 		if len(pingPoints) >= 5 {
 			err := postMetric(pingApiUrl, headers, pingPoints)
